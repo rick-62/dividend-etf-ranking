@@ -11,6 +11,12 @@ Globals:
     Timeout: 3
 
 Resources:
+
+  S3BucketRawData:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: dividend-etf-ranking-raw-data
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
