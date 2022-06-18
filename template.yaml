@@ -43,8 +43,7 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          MY_BUCKET:
-            Ref: !Sub "${AWS::StackName}-raw-data"
+          MY_BUCKET: !Sub "${AWS::StackName}-raw-data"
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/freetrade_transform
