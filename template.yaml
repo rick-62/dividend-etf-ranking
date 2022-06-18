@@ -9,7 +9,11 @@ Description: >
 Globals:
   Function:
     Timeout: 3
-
+    Environment:
+      Variables:
+        RAW_BUCKET: !Sub "${AWS::StackName}-raw-data"
+        INTERMEDIATE_BUCKET: !Sub "${AWS::StackName}-intermediate-data"
+        PRIMARY_BUCKET: !Sub "${AWS::StackName}-primary-data"
 
 Resources:
 
@@ -17,6 +21,16 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-raw-data"
+
+  S3BucketIntermediateData:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-intermediate-data"
+
+  S3BucketPrimaryData:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-primary-data"
 
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -43,12 +57,13 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          MY_BUCKET: !Sub "${AWS::StackName}-raw-data"
+          FILEIN: "freetrade_stocks.csv"
+          FILEOUT: "freetrade_transformed.csv"
       Policies:
         - S3ReadPolicy:
-            BucketName: !Sub "${AWS::StackName}-raw-data"
+            BucketName: !Ref S3BucketRawData
         - S3CrudPolicy:
-            BucketName: !Sub "${AWS::StackName}-raw-data"
+            BucketName: !Ref S3BucketIntermediateData
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/freetrade_transform

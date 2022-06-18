@@ -12,7 +12,8 @@
             "lambda": {
                 "payload": {},
                 "environmentVariables": {
-                    "MY_BUCKET": "dividend-etf-ranking-dev-raw-data"
+                    "RAW_BUCKET": "dividend-etf-ranking-dev-raw-data",
+                    "FILEIN": "freetrade_stocks.csv",
                 },
                 "runtime": "python3.9"
             }

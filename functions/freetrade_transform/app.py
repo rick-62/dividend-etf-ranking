@@ -7,8 +7,12 @@ import boto3
 import pandas as pd
 
 s3_client = boto3.client("s3")
-# S3_BUCKET_NAME = 'dividend-etf-ranking-dev-raw-data'
-S3_BUCKET_NAME = os.environ.get('MY_BUCKET')
+
+S3_BUCKET_INPUT = os.environ.get('RAW_BUCKET')
+S3_KEY_INPUT = os.environ.get('FILEIN')
+
+S3_BUCKET_OUTPUT = os.environ.get('INTERMEDIATE_BUCKET')
+S3_KEY_OUTPUT = os.environ.get('FILEOUT')
 
 freetrade_mic_remap = {
   'XLON': 'London',
@@ -21,7 +25,7 @@ def lambda_handler(event, context):
     # ft: pd.DataFrame, params: Dict
     
     # load data
-    response = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key="freetrade_stocks.csv")
+    response = s3_client.get_object(Bucket=S3_BUCKET_INPUT, Key=S3_KEY_INPUT)
     status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
     ft = pd.read_csv(response.get("Body"))
 
@@ -46,7 +50,12 @@ def lambda_handler(event, context):
     # save output to S3 bucket
     out_buffer = StringIO()
     ft.to_csv(out_buffer, index=False)
-    s3_client.put_object(Bucket=S3_BUCKET_NAME, Key="freetrade_transformed.csv", Body=out_buffer.getvalue())
+    try:
+        s3_client.put_object(Bucket=S3_BUCKET_OUTPUT, Key=S3_KEY_OUTPUT, Body=out_buffer.getvalue())
+    except s3_client.exceptions.NoSuchBucket:
+        pass
+
+    
 
     return {
         "statusCode": status,
