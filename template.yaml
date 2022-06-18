@@ -44,6 +44,11 @@ Resources:
       Environment:
         Variables:
           MY_BUCKET: !Sub "${AWS::StackName}-raw-data"
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub "${AWS::StackName}-raw-data"
+        - S3CrudPolicy:
+            BucketName: !Sub "${AWS::StackName}-raw-data"
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/freetrade_transform
