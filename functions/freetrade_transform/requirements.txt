@@ -1,1 +1,3 @@
 pandas
+boto3
+debugpy>=1.0,<2

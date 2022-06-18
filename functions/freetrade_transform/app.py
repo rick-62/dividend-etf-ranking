@@ -1,9 +1,29 @@
-import pandas as pd
+import json
+import os
+from io import StringIO
 from typing import Dict
 
+import boto3
+import pandas as pd
 
-def lambda_handler(ft: pd.DataFrame, params: Dict):
+s3_client = boto3.client("s3")
+# S3_BUCKET_NAME = 'dividend-etf-ranking-dev-raw-data'
+S3_BUCKET_NAME = os.environ.get('MY_BUCKET')
+
+freetrade_mic_remap = {
+  'XLON': 'London',
+  'XNYS': 'NYSE',
+  'XNAS': 'NASDAQ',
+}
+
+def lambda_handler(event, context):
     """transform Freetrade data"""
+    # ft: pd.DataFrame, params: Dict
+    
+    # load data
+    response = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key="freetrade_stocks.csv")
+    status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+    ft = pd.read_csv(response.get("Body"))
 
     # cleanse columns
     ft.columns = ft.columns.str.lower()
@@ -12,17 +32,7 @@ def lambda_handler(ft: pd.DataFrame, params: Dict):
     ft.currency = ft.currency.str.upper()
 
     # convert mic to exchange e.g. XLON: London (for joining to investpy)
-    ft["stock_exchange"] = [params["freetrade_mic_remap"].get(x) for x in ft.mic]
-
-    # concatenate suffix e.g. "XLON" -> ".LON" (for joining to alpha vantage)
-    ft["symbol_alphavantage"] = ft.symbol.str.cat(
-        [params["alpha_vantage_symbol_suffix"].get(x, "") for x in ft.mic]
-    )
-
-    # concatenate suffix e.g. "XLON" -> ".L" (for joining to Yahoo data) & some corrections
-    ft["symbol_yahoo"] = ft.symbol.str.cat(
-        [params["yahoo_symbol_suffix"].get(x, "") for x in ft.mic]
-    ).replace(params["yahoo_symbol_correction"])
+    ft["stock_exchange"] = [freetrade_mic_remap.get(x) for x in ft.mic]
 
     # create description column for later searching/filtering
     ft["description"] = (ft.title + " " + ft.long_title + " " + ft.subtitle).str.upper()
@@ -33,4 +43,16 @@ def lambda_handler(ft: pd.DataFrame, params: Dict):
     # apply index
     ft.set_index('isin', inplace=True)
 
-    return ft
+    # save output to S3 bucket
+    out_buffer = StringIO()
+    ft.to_csv(out_buffer, index=False)
+    s3_client.put_object(Bucket=S3_BUCKET_NAME, Key="freetrade_transformed.csv", Body=out_buffer.getvalue())
+
+    return {
+        "statusCode": status,
+        "body": json.dumps(
+            {
+                "message": f"final data size is: {ft.size}",
+            }
+        ),
+    }

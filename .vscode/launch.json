@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "dividend-etf-ranking:FreetradeTransform (python3.9)",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/template.yaml",
+                "logicalId": "FreetradeTransform"
+            },
+            "lambda": {
+                "payload": {},
+                "environmentVariables": {
+                    "MY_BUCKET": "dividend-etf-ranking-dev-raw-data"
+                },
+                "runtime": "python3.9"
+            }
+        }
+    ]
+}
