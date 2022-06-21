@@ -51,8 +51,6 @@ def lambda_handler(event, context):
     except s3_client.exceptions.NoSuchBucket:
         pass
 
-    
-
     return {
         "statusCode": status,
         "body": json.dumps(

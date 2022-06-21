@@ -69,6 +69,34 @@ Resources:
       DockerContext: ./functions/freetrade_transform
       DockerTag: python3.9-v1
 
+  ExtractETFList:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          FILEIN: "freetrade_transformed.csv"
+          QUEUE: !Ref SqsEtfQueue
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref S3BucketIntermediateData
+        - SQSSendMessagePolicy:
+            QueueName: !Ref SqsEtfQueue
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./functions/extract_etf_list
+      DockerTag: python3.9-v1
+
+  SqsEtfQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      DelaySeconds: 5  # delay before messages appears in the queue
+      MessageRetentionPeriod: 345600  # how long the message stays in the queue before getting removed (default is 4 days)
+      VisibilityTimeout: 10 # the amount seconds the message is consumed for and disappears from the queue (note: consumer must delete the message from the queue after receiving and processing it)
+
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
