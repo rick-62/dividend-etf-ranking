@@ -22,7 +22,6 @@ freetrade_mic_remap = {
 
 def lambda_handler(event, context):
     """transform Freetrade data"""
-    # ft: pd.DataFrame, params: Dict
     
     # load data
     response = s3_client.get_object(Bucket=S3_BUCKET_INPUT, Key=S3_KEY_INPUT)
@@ -43,9 +42,6 @@ def lambda_handler(event, context):
 
     # flag ETF stock
     ft["ETF_flag"] = ft["description"].str.contains(" ETF")
-
-    # apply index
-    ft.set_index('isin', inplace=True)
 
     # save output to S3 bucket
     out_buffer = StringIO()
