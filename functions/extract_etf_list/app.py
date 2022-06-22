@@ -1,7 +1,5 @@
 import json
 import os
-from io import StringIO
-from typing import Dict
 
 import boto3
 import pandas as pd
@@ -28,7 +26,7 @@ def lambda_handler(event, context):
     
     # process each filtered ETF and send to the SQS queue
     count = 0
-    for isin in ft['Isin']:
+    for isin in ft['isin']:
         response = sqs_client.send_message(QueueUrl=SQS_QUEUE, MessageBody=isin)
         count += 1
 

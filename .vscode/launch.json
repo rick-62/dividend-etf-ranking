@@ -3,6 +3,25 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
+            "name": "dividend-etf-ranking:ExtractETFList (python3.9)",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/template.yaml",
+                "logicalId": "ExtractETFList"
+            },
+            "lambda": {
+                "payload": {},
+                "environmentVariables": {
+                    "QUEUE": "https://sqs.eu-west-2.amazonaws.com/425026262389/dividend-etf-ranking-dev-SqsEtfQueue-Qz45pcOT2kv7",
+                    "FILEIN": "freetrade_transformed.csv",
+                    "INTERMEDIATE_BUCKET": "dividend-etf-ranking-dev-intermediate-data"
+                },
+                "runtime": "python3.9"
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
             "name": "dividend-etf-ranking:FreetradeTransform (python3.9)",
             "invokeTarget": {
                 "target": "template",
@@ -13,7 +32,7 @@
                 "payload": {},
                 "environmentVariables": {
                     "RAW_BUCKET": "dividend-etf-ranking-dev-raw-data",
-                    "FILEIN": "freetrade_stocks.csv",
+                    "FILEIN": "freetrade_stocks.csv"
                 },
                 "runtime": "python3.9"
             }
