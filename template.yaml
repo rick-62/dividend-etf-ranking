@@ -17,6 +17,8 @@ Globals:
 
 Resources:
 
+# S3
+
   S3BucketRawData:
     Type: AWS::S3::Bucket
     Properties:
@@ -31,6 +33,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-primary-data"
+
+# Lambda
 
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -88,6 +92,31 @@ Resources:
       Dockerfile: Dockerfile
       DockerContext: ./functions/extract_etf_list
       DockerTag: python3.9-v1
+
+  ScrapeETFData:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Policies:
+        - SQSPollerPolicy:
+            QueueName: !Ref SqsEtfQueue
+      ReservedConcurrentExecutions: 2 # reserve concurrent limit
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !Ref SqsEtfQueue
+            BatchSize: 1
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./functions/scrape_etf_data
+      DockerTag: python3.9-v1
+
+
+
+# SQS
 
   SqsEtfQueue:
     Type: AWS::SQS::Queue
