@@ -107,7 +107,7 @@ Resources:
         MySQSEvent:
           Type: SQS
           Properties:
-            Queue: !Ref SqsEtfQueue
+            Queue: !GetAtt SqsEtfQueue.Arn
             BatchSize: 1
     DependsOn: SqsEtfQueue
     Metadata:
