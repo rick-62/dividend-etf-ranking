@@ -109,6 +109,7 @@ Resources:
           Properties:
             Queue: !Ref SqsEtfQueue
             BatchSize: 1
+    DependsOn: SqsEtfQueue
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/scrape_etf_data
