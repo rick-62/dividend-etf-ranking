@@ -102,6 +102,8 @@ Resources:
       Policies:
         - SQSPollerPolicy:
             QueueName: !Ref SqsEtfQueue
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketIntermediateData
       ReservedConcurrentExecutions: 2 # reserve concurrent limit
       Events:
         MySQSEvent:
