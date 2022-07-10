@@ -122,6 +122,26 @@ Resources:
       DockerTag: python3.9-v1
 
 
+  CombineETFData:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          FOLDER_IN: "justetf_scraped_data/"
+          FILEOUT: "dividend_summary.csv"
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref S3BucketIntermediateData
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketPrimaryData
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./functions/combine_etf_data
+      DockerTag: python3.9-v1
+
 
 # SQS
 

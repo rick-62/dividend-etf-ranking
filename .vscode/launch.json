@@ -3,6 +3,26 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
+            "name": "dividend-etf-ranking:CombineETFData (python3.9)",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/template.yaml",
+                "logicalId": "CombineETFData"
+            },
+            "lambda": {
+                "payload": {},
+                "environmentVariables": {
+                    "INTERMEDIATE_BUCKET": "dividend-etf-ranking-dev-intermediate-data",
+                    "FOLDER_IN": "justetf_scraped_data/",
+                    "PRIMARY_BUCKET": "dividend-etf-ranking-dev-primary-data",
+                    "FILEOUT": "dividend_summary_debug.csv"
+                },
+                "runtime": "python3.9"
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
             "name": "dividend-etf-ranking:ScrapeETFData (python3.9)",
             "invokeTarget": {
                 "target": "template",
