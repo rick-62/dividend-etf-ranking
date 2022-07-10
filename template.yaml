@@ -105,7 +105,7 @@ Resources:
             QueueName: !Ref SqsEtfQueue
         - S3CrudPolicy:
             BucketName: !Ref S3BucketIntermediateData
-      ReservedConcurrentExecutions: 2 # reserve concurrent limit
+      ReservedConcurrentExecutions: 1 # concurrent limit
       Events:
         MySQSEvent:
           Type: SQS
@@ -125,9 +125,9 @@ Resources:
   SqsEtfQueue:
     Type: AWS::SQS::Queue
     Properties:
-      DelaySeconds: 5  # delay before messages appears in the queue
-      MessageRetentionPeriod: 345600  # how long the message stays in the queue before getting removed (default is 4 days)
-      VisibilityTimeout: 10 # the amount seconds the message is consumed for and disappears from the queue (note: consumer must delete the message from the queue after receiving and processing it)
+      DelaySeconds: 1  # delay before messages appears in the queue
+      MessageRetentionPeriod: 1000  # the amount seconds the message stays in the queue before getting removed (default is 4 days)
+      VisibilityTimeout: 1000 # the amount seconds the message is consumed for and disappears from the queue (note: consumer must delete the message from the queue after receiving and processing it)
 
 
 Outputs:
