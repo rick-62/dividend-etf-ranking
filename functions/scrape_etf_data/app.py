@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 s3_client = boto3.client("s3")
 
 S3_BUCKET_OUTPUT = os.environ.get('INTERMEDIATE_BUCKET')
+S3_FOLDER_OUTPUT = os.environ.get('FOLDER_OUT')
 
 def lambda_handler(event, context):
 
@@ -34,7 +35,7 @@ def lambda_handler(event, context):
     data = scrape_key_data_from_justetf_response(response)
 
     # save the results to S3 bucket (as a pickle file)
-    s3_client.put_object(Bucket=S3_BUCKET_OUTPUT, Key=f"{isin}.pkl", Body=pickle.dumps(data))
+    s3_client.put_object(Bucket=S3_BUCKET_OUTPUT, Key=f"{S3_FOLDER_OUTPUT}{isin}.pkl", Body=pickle.dumps(data))
 
     return {
         "body": json.dumps(
