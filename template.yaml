@@ -82,7 +82,7 @@ Resources:
       Environment:
         Variables:
           FILEIN: "freetrade_transformed.csv"
-          QUEUE: !Ref SqsEtfQueue
+          QUEUE_URL: !Ref SqsEtfQueue
       Policies:
         - S3ReadPolicy:
             BucketName: !Ref S3BucketIntermediateData

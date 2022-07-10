@@ -9,7 +9,7 @@ sqs_client = boto3.client("sqs")
 
 S3_BUCKET_INPUT = os.environ.get('INTERMEDIATE_BUCKET')
 S3_KEY_INPUT = os.environ.get('FILEIN')
-SQS_QUEUE = os.environ.get('QUEUE')
+SQS_QUEUE = os.environ.get('QUEUE_URL')
 
 
 def lambda_handler(event, context):
