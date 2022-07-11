@@ -132,6 +132,7 @@ Resources:
         Variables:
           FOLDER_IN: "justetf_scraped_data/"
           FILEOUT: "dividend_summary.csv"
+          FILEIN: "freetrade_transformed.csv"
       Policies:
         - S3ReadPolicy:
             BucketName: !Ref S3BucketIntermediateData

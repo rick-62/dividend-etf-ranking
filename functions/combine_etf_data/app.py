@@ -11,6 +11,7 @@ s3_resource = boto3.resource('s3')
 
 S3_BUCKET_IN = os.environ.get('INTERMEDIATE_BUCKET')
 S3_FOLDER_IN = os.environ.get('FOLDER_IN')
+S3_FILE_IN = os.environ.get('FILEIN')
 
 S3_BUCKET_OUT = os.environ.get('PRIMARY_BUCKET')
 S3_FILE_OUT = os.environ.get('FILEOUT')
@@ -46,9 +47,25 @@ def lambda_handler(event, context):
         .eval('net_yield = dividend_yield - expense_ratio')
     )
     
+    # load freetrade data
+    freetrade = pd.read_csv(
+        s3_client
+        .get_object(Bucket=S3_BUCKET_IN, Key=S3_FILE_IN)
+        .get("Body")
+    )
+
+    # combine scraped data with initial freetrade list
+    etf_summary2 = (
+        freetrade[['isin','title', 'long_title', 'subtitle', 'symbol']]
+        .set_index('isin')
+        .join(etf_summary[['latest_quote', 'net_yield', 'dividend_yield', 'expense_ratio']])
+        .dropna()
+        .sort_values('net_yield', ascending=False)
+    )
+
     # save the results to S3 bucket (as a CSV)
     out_buffer = StringIO()
-    etf_summary.to_csv(out_buffer, index=False)
+    etf_summary2.to_csv(out_buffer, index=False)
     s3_client.put_object(Bucket=S3_BUCKET_OUT, Key=S3_FILE_OUT, Body=out_buffer.getvalue())
     
 

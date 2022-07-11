@@ -15,7 +15,8 @@
                     "INTERMEDIATE_BUCKET": "dividend-etf-ranking-dev-intermediate-data",
                     "FOLDER_IN": "justetf_scraped_data/",
                     "PRIMARY_BUCKET": "dividend-etf-ranking-dev-primary-data",
-                    "FILEOUT": "dividend_summary_debug.csv"
+                    "FILEOUT": "dividend_summary_debug.csv",
+                    "FILEIN": "freetrade_transformed.csv"
                 },
                 "runtime": "python3.9"
             }
