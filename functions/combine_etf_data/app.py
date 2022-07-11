@@ -1,7 +1,10 @@
 import json
-import boto3
 import os
 import pickle
+from io import StringIO
+
+import boto3
+import pandas as pd
 
 s3_client = boto3.client("s3")
 s3_resource = boto3.resource('s3')
@@ -32,16 +35,22 @@ def lambda_handler(event, context):
         data = pickle.loads(file.read())
         isin = os.path.basename(obj_path).split('.')[0]
         combined_dict[isin] = data
-        print(isin)
 
     # Combine into one dataframe
-
+    etf_summary = (
+        pd.DataFrame.from_dict(combined_dict, orient='index', dtype='float')
+        .assign(ISIN = lambda x: x.index)
+        .assign(expense_ratio = lambda x: x['expense_ratio'].str[:-1].astype(float))
+        .assign(date_latest_quote = lambda x: pd.to_datetime(x['date_latest_quote'], format="%d/%m/%Y", exact=False))
+        .eval('dividend_yield = 100 * one_year_dividend / latest_quote')
+        .eval('net_yield = dividend_yield - expense_ratio')
+    )
     
-
     # save the results to S3 bucket (as a CSV)
+    out_buffer = StringIO()
+    etf_summary.to_csv(out_buffer, index=False)
+    s3_client.put_object(Bucket=S3_BUCKET_OUT, Key=S3_FILE_OUT, Body=out_buffer.getvalue())
     
-
-
 
     return {
         "body": json.dumps(
