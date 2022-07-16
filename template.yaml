@@ -64,7 +64,7 @@ Resources:
         S3Event:
           Type: S3
           Properties:
-            Bucket: !Sub "${AWS::StackName}-raw-data"     # This must be the name of an S3 bucket declared in the same template file
+            Bucket: !Ref S3BucketRawData   # This must be the name of an S3 bucket declared in the same template file
             Events: s3:ObjectCreated:*
             Filter:
               S3Key:
@@ -77,7 +77,7 @@ Resources:
           FILEOUT: freetrade_transformed.csv
       Policies:
         - S3ReadPolicy:
-            BucketName: !Ref S3BucketRawData
+            BucketName: !Sub "${AWS::StackName}-raw-data"  
         - S3CrudPolicy:
             BucketName: !Ref S3BucketIntermediateData
     Metadata:
