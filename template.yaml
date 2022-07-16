@@ -55,7 +55,6 @@ Resources:
 
   FreetradeTransform:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    DependsOn: S3BucketRawData
     Properties:
       PackageType: Image
       Architectures:
@@ -75,11 +74,14 @@ Resources:
         Variables:
           FILEIN: freetrade_stocks.csv
           FILEOUT: freetrade_transformed.csv
-      Policies:
-        - S3ReadPolicy:
-            BucketName: !Sub "${AWS::StackName}-raw-data"  
+      Policies:  
         - S3CrudPolicy:
             BucketName: !Ref S3BucketIntermediateData
+        - Version: '2012-10-17' # Policy Document to allow S3 access
+          Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub 'arn:aws:s3:::${AWS::StackName}-raw-data/*'
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/freetrade_transform
