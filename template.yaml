@@ -173,7 +173,9 @@ Resources:
               Action: 
                 - s3:GetObject
                 - s3:ListBucket
-              Resource: !Sub 'arn:aws:s3:::${AWS::StackName}-intermediate-data'
+              Resource: 
+                - !Sub 'arn:aws:s3:::${AWS::StackName}-intermediate-data'
+                - !Sub 'arn:aws:s3:::${AWS::StackName}-intermediate-data/*'
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./functions/combine_etf_data
