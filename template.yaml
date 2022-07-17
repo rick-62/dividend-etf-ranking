@@ -93,11 +93,11 @@ Resources:
       PackageType: Image
       Architectures:
         - x86_64
-      Events:
-        Schedule:
-          Type: Schedule
-          Properties:
-            Schedule: cron(0 6 ? * SUN *)  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
+      # Events:
+      #   Schedule:
+      #     Type: Schedule
+      #     Properties:
+      #       Schedule: cron(0 6 ? * SUN *)  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
       Environment:
         Variables:
           FILEIN: "freetrade_transformed.csv"
