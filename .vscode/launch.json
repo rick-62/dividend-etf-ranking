@@ -60,7 +60,7 @@
             "lambda": {
                 "payload": {},
                 "environmentVariables": {
-                    "QUEUE": "https://sqs.eu-west-2.amazonaws.com/425026262389/dividend-etf-ranking-dev-SqsEtfQueue-Qz45pcOT2kv7",
+                    "QUEUE_URL": "https://sqs.eu-west-2.amazonaws.com/425026262389/dividend-etf-ranking-dev-SqsEtfQueue-Qz45pcOT2kv7",
                     "FILEIN": "freetrade_transformed.csv",
                     "INTERMEDIATE_BUCKET": "dividend-etf-ranking-dev-intermediate-data"
                 },
