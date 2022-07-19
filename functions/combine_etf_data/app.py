@@ -9,15 +9,16 @@ import pandas as pd
 s3_client = boto3.client("s3")
 s3_resource = boto3.resource('s3')
 
+# Loads in all required environment variables from template
 S3_BUCKET_IN = os.environ.get('INTERMEDIATE_BUCKET')
 S3_FOLDER_IN = os.environ.get('FOLDER_IN')
 S3_FILE_IN = os.environ.get('FILEIN')
-
 S3_BUCKET_OUT = os.environ.get('PRIMARY_BUCKET')
 S3_FILE_OUT = os.environ.get('FILEOUT')
 
 
 def lambda_handler(event, context):
+    '''Combines all scraped ETF data, to create final table output''' 
 
     # Create s3 resource just for extracting list of objects
     bucket = s3_resource.Bucket(S3_BUCKET_IN)
@@ -68,7 +69,7 @@ def lambda_handler(event, context):
     etf_summary2.to_csv(out_buffer, index=False)
     s3_client.put_object(Bucket=S3_BUCKET_OUT, Key=S3_FILE_OUT, Body=out_buffer.getvalue())
     
-
+    # returns number of objects/files being combined (for reference and debugging usefulness)
     return {
         "body": json.dumps(
             {

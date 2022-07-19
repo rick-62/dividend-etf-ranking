@@ -128,7 +128,6 @@ Resources:
       DockerContext: ./functions/scrape_etf_data
       DockerTag: python3.9-v1
 
-
   CombineETFData:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -137,16 +136,10 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        S3Event2:
-          Type: S3
+        Schedule:
+          Type: Schedule
           Properties:
-            Bucket: !Ref S3BucketIntermediateData   # This must be the name of an S3 bucket declared in the same template file
-            Events: s3:ObjectCreated:*
-            Filter:
-              S3Key:
-                Rules:
-                - Name: prefix      # or "suffix"
-                  Value: justetf_scraped_data   # The value to search for in the S3 object key names
+            Schedule: !If [isProd, "cron(0 7 ? * 1 *)", "cron(0 6 ? * 1 1970)"]  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
       Environment:
         Variables:
           FOLDER_IN: "justetf_scraped_data/"
@@ -168,7 +161,6 @@ Resources:
       Dockerfile: Dockerfile
       DockerContext: ./functions/combine_etf_data
       DockerTag: python3.9-v1
-
 
 # SQS
 

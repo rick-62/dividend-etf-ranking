@@ -15,7 +15,7 @@ SQS_QUEUE = os.environ.get('QUEUE_URL')
 def lambda_handler(event, context):
     """extract filtered ETF ISINs from transformed Freetrade data"""
 
-    # load data
+    # load data from s3 bucket
     response = s3_client.get_object(Bucket=S3_BUCKET_INPUT, Key=S3_KEY_INPUT)
     status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
     ft = pd.read_csv(response.get("Body"))
@@ -30,6 +30,7 @@ def lambda_handler(event, context):
         response = sqs_client.send_message(QueueUrl=SQS_QUEUE, MessageBody=isin)
         count += 1
 
+    # Return count of ISINs send to SQS, for reference and debugging usefulness
     return {
         "statusCode": status,
         "body": json.dumps(

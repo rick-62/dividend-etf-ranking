@@ -21,7 +21,7 @@ freetrade_mic_remap = {
 }
 
 def lambda_handler(event, context):
-    """transform Freetrade data"""
+    """transforms Freetrade data"""
     
     # load data
     response = s3_client.get_object(Bucket=S3_BUCKET_INPUT, Key=S3_KEY_INPUT)
@@ -51,6 +51,7 @@ def lambda_handler(event, context):
     except s3_client.exceptions.NoSuchBucket:
         pass
 
+    # returns number of records in Freetrade data, for reference and debugging usefulness
     return {
         "statusCode": status,
         "body": json.dumps(

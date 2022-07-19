@@ -15,6 +15,7 @@ S3_BUCKET_OUTPUT = os.environ.get('INTERMEDIATE_BUCKET')
 S3_FOLDER_OUTPUT = os.environ.get('FOLDER_OUT')
 
 def lambda_handler(event, context):
+    '''Scrapes ETF data and stores dictionary in S3'''
 
     # extract ETF isin from event
     isin = event['Records'][0]['body']
