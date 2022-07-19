@@ -15,6 +15,10 @@ Globals:
         INTERMEDIATE_BUCKET: !Sub "${AWS::StackName}-intermediate-data"
         PRIMARY_BUCKET: !Sub "${AWS::StackName}-primary-data"
 
+Conditions:
+  isProd: 
+    !Equals [!Sub "${AWS::StackName}", "dividend-etf-ranking-prod"]
+
 Resources:
 
 # S3
@@ -98,7 +102,7 @@ Resources:
         Schedule:
           Type: Schedule
           Properties:
-            Schedule: cron(0 6 ? * SUN *)  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
+            Schedule: !if [isProd, "cron(0 6 ? * 1 *)", "cron(0 6 ? * 1 1970)"]  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
       Environment:
         Variables:
           FILEIN: "freetrade_transformed.csv"
