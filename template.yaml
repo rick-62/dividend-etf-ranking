@@ -40,23 +40,6 @@ Resources:
 
 # Lambda
 
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      PackageType: Image
-      Architectures:
-        - x86_64
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: ./hello_world
-      DockerTag: python3.9-v1
-
   FreetradeTransform:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -102,7 +85,7 @@ Resources:
         Schedule:
           Type: Schedule
           Properties:
-            Schedule: !if [isProd, "cron(0 6 ? * 1 *)", "cron(0 6 ? * 1 1970)"]  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
+            Schedule: !If [isProd, "cron(0 6 ? * 1 *)", "cron(0 6 ? * 1 1970)"]  # 0mins 6hrs, regardless of day of month, every month, every Sunday, every year (6am every Sunday)
       Environment:
         Variables:
           FILEIN: "freetrade_transformed.csv"
@@ -196,21 +179,11 @@ Resources:
       MessageRetentionPeriod: 1000  # the amount seconds the message stays in the queue before getting removed (default is 4 days)
       VisibilityTimeout: 1000 # the amount seconds the message is consumed for and disappears from the queue (note: consumer must delete the message from the queue after receiving and processing it)
 
-
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
   FreetradeTransform:
     Description: "Transform Freetrade stock list"
     Value: !GetAtt FreetradeTransform.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
   
